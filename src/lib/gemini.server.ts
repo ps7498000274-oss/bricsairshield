@@ -28,9 +28,9 @@ export type GeminiResult =
 export async function callGemini(opts: {
   system: string;
   prompt: string;
-  image?: GeminiImage | null;
-  json?: boolean;
-  history?: Array<{ role: "user" | "assistant"; content: string }>;
+  image?: GeminiImage | null | undefined;
+  json?: boolean | undefined;
+  history?: Array<{ role: "user" | "assistant"; content: string }> | undefined;
 }): Promise<GeminiResult> {
   const googleKey = process.env["GEMINI_API_KEY"];
   if (googleKey) {

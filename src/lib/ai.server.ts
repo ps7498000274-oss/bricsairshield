@@ -52,9 +52,9 @@ Never claim to know the exact facility, company or legal violation. Reply with J
 export async function analyzeImageImpl(input: {
   mimeType: string;
   data: string;
-  city?: string;
-  country?: string;
-  note?: string;
+  city?: string | undefined;
+  country?: string | undefined;
+  note?: string | undefined;
 }): Promise<AiEnvelope<ImageAnalysis>> {
   if (!/^image\/(png|jpe?g|webp|gif)$/i.test(input.mimeType)) {
     throw new Error("Unsupported image type. Use PNG, JPEG, WEBP or GIF.");
@@ -181,8 +181,8 @@ function globalContext() {
 
 export async function copilotImpl(input: {
   question: string;
-  cityId?: string;
-  history?: Array<{ role: "user" | "assistant"; content: string }>;
+  cityId?: string | undefined;
+  history?: Array<{ role: "user" | "assistant"; content: string }> | undefined;
 }): Promise<AiEnvelope<{ text: string }>> {
   const focus = input.cityId ? riskContextFor(input.cityId) : null;
   const focusBlock = focus
@@ -220,7 +220,7 @@ export async function summarizeIncidentImpl(i: {
   observedAt: string;
   riskScore: number;
   riskLevel: string;
-  imageFindings?: string;
+  imageFindings?: string | undefined;
 }): Promise<AiEnvelope<{ text: string }>> {
   const res = await callGemini({
     system:
