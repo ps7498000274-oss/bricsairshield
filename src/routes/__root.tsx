@@ -77,15 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "BRICS AirShield — Cross-Border Air Pollution Intelligence" },
+      { name: "description", content: "AI-powered cross-border air-pollution intelligence prototype for BRICS nations, powered by Google Gemini." },
+      { name: "author", content: "BRICS AirShield" },
+      { property: "og:title", content: "BRICS AirShield" },
+      { property: "og:description", content: "Detect. Predict. Explain. Coordinate." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
-    ],
+          ],
     links: [
       {
         rel: "stylesheet",

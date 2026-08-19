@@ -10,11 +10,37 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnalyzeRouteImport } from './routes/analyze'
+import { Route as CopilotRouteImport } from './routes/copilot'
+import { Route as CountriesRouteImport } from './routes/countries'
+import { Route as IncidentsRouteImport } from './routes/incidents'
 import { Route as LiveRouteImport } from './routes/live'
+import { Route as MethodologyRouteImport } from './routes/methodology'
+import { Route as ReportRouteImport } from './routes/report'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyzeRoute = AnalyzeRouteImport.update({
+  id: '/analyze',
+  path: '/analyze',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CopilotRoute = CopilotRouteImport.update({
+  id: '/copilot',
+  path: '/copilot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CountriesRoute = CountriesRouteImport.update({
+  id: '/countries',
+  path: '/countries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IncidentsRoute = IncidentsRouteImport.update({
+  id: '/incidents',
+  path: '/incidents',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LiveRoute = LiveRouteImport.update({
@@ -22,31 +48,90 @@ const LiveRoute = LiveRouteImport.update({
   path: '/live',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MethodologyRoute = MethodologyRouteImport.update({
+  id: '/methodology',
+  path: '/methodology',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportRoute = ReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analyze': typeof AnalyzeRoute
+  '/copilot': typeof CopilotRoute
+  '/countries': typeof CountriesRoute
+  '/incidents': typeof IncidentsRoute
   '/live': typeof LiveRoute
+  '/methodology': typeof MethodologyRoute
+  '/report': typeof ReportRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analyze': typeof AnalyzeRoute
+  '/copilot': typeof CopilotRoute
+  '/countries': typeof CountriesRoute
+  '/incidents': typeof IncidentsRoute
   '/live': typeof LiveRoute
+  '/methodology': typeof MethodologyRoute
+  '/report': typeof ReportRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analyze': typeof AnalyzeRoute
+  '/copilot': typeof CopilotRoute
+  '/countries': typeof CountriesRoute
+  '/incidents': typeof IncidentsRoute
   '/live': typeof LiveRoute
+  '/methodology': typeof MethodologyRoute
+  '/report': typeof ReportRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/live'
+  fullPaths:
+    | '/'
+    | '/analyze'
+    | '/copilot'
+    | '/countries'
+    | '/incidents'
+    | '/live'
+    | '/methodology'
+    | '/report'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/live'
-  id: '__root__' | '/' | '/live'
+  to:
+    | '/'
+    | '/analyze'
+    | '/copilot'
+    | '/countries'
+    | '/incidents'
+    | '/live'
+    | '/methodology'
+    | '/report'
+  id:
+    | '__root__'
+    | '/'
+    | '/analyze'
+    | '/copilot'
+    | '/countries'
+    | '/incidents'
+    | '/live'
+    | '/methodology'
+    | '/report'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyzeRoute: typeof AnalyzeRoute
+  CopilotRoute: typeof CopilotRoute
+  CountriesRoute: typeof CountriesRoute
+  IncidentsRoute: typeof IncidentsRoute
   LiveRoute: typeof LiveRoute
+  MethodologyRoute: typeof MethodologyRoute
+  ReportRoute: typeof ReportRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,6 +143,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analyze': {
+      id: '/analyze'
+      path: '/analyze'
+      fullPath: '/analyze'
+      preLoaderRoute: typeof AnalyzeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/copilot': {
+      id: '/copilot'
+      path: '/copilot'
+      fullPath: '/copilot'
+      preLoaderRoute: typeof CopilotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/countries': {
+      id: '/countries'
+      path: '/countries'
+      fullPath: '/countries'
+      preLoaderRoute: typeof CountriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/incidents': {
+      id: '/incidents'
+      path: '/incidents'
+      fullPath: '/incidents'
+      preLoaderRoute: typeof IncidentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/live': {
       id: '/live'
       path: '/live'
@@ -65,12 +178,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/methodology': {
+      id: '/methodology'
+      path: '/methodology'
+      fullPath: '/methodology'
+      preLoaderRoute: typeof MethodologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report': {
+      id: '/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyzeRoute: AnalyzeRoute,
+  CopilotRoute: CopilotRoute,
+  CountriesRoute: CountriesRoute,
+  IncidentsRoute: IncidentsRoute,
   LiveRoute: LiveRoute,
+  MethodologyRoute: MethodologyRoute,
+  ReportRoute: ReportRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
