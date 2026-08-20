@@ -49,10 +49,12 @@ function MethodologyPage() {
             <div>
               <dt className="font-medium">Environmental readings — LIVE OPEN DATA (Open-Meteo / CAMS)</dt>
               <dd className="mt-1 text-muted-foreground">
-                26 cities across five BRICS nations. Baselines were chosen to match publicly
-                reported typical magnitudes for each city, then varied deterministically per hour so
-                the interface behaves like a live feed. These are <strong>not</strong> live
-                government sensor readings and must never be cited as such.
+                26 cities across five BRICS nations. PM2.5, PM10 and US AQI come from the Open-Meteo
+                Air Quality API (Copernicus CAMS global model); temperature, humidity, wind and
+                pressure from the Open-Meteo Forecast API. Both are free and keyless, refreshed
+                every 10 minutes. These are <strong>modelled</strong> values, not official
+                government reference-monitor readings, and must not be cited as such. If the feed is
+                unreachable the app falls back to a labelled seed dataset.
               </dd>
             </div>
             <div>
