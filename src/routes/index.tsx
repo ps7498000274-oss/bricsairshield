@@ -260,7 +260,7 @@ function Overview() {
 
         <Panel
           title="14-day AQI trend"
-          description="Synthetic demo trend derived from the seeded dataset"
+          description="Modelled 14-day trend derived from current live readings"
         >
           <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">

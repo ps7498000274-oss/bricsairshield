@@ -359,7 +359,7 @@ function ReportPage() {
               {city ? (
                 <p className="mt-5 text-xs text-muted-foreground">
                   Current sensor-only risk for {city.city}: {computeRisk(city).risk_score}/100 (
-                  {computeRisk(city).risk_level}) — simulated demo data.
+                  {computeRisk(city).risk_level}) — live Open-Meteo / CAMS observation.
                 </p>
               ) : null}
             </Panel>

@@ -114,7 +114,7 @@ function LivePage() {
                     <p className="mt-0.5 text-xs text-muted-foreground">
                       {selected.region} · {selected.latitude.toFixed(3)},{" "}
                       {selected.longitude.toFixed(3)} · updated{" "}
-                      {new Date(selected.timestamp).toLocaleString()} · simulated demo data
+                      {new Date(selected.timestamp).toLocaleString()} · live Open-Meteo / CAMS observation
                     </p>
                   </div>
                   <div className="text-right">

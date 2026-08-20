@@ -74,7 +74,7 @@ export default function PollutionMap({ cities, height = 460, selectedId, onSelec
             <tr><td style="opacity:.7">Temperature</td><td style="text-align:right">${c.temperature} °C</td></tr>
             <tr><td style="opacity:.7">Wind</td><td style="text-align:right">${c.wind_speed} m/s @ ${c.wind_direction}°</td></tr>
           </table>
-          <div style="margin-top:8px;opacity:.6">Updated ${new Date(c.timestamp).toLocaleString()} · simulated demo data</div>
+          <div style="margin-top:8px;opacity:.6">Updated ${new Date(c.timestamp).toLocaleString()} · live Open-Meteo / CAMS</div>
         </div>`,
       );
       marker.on("click", () => onSelect?.(c.id));

@@ -162,7 +162,7 @@ function CountriesPage() {
       <Panel
         className="mt-6"
         title="21-day AQI trend by country"
-        description="Synthetic demo trend derived from the seeded dataset — not an official time series"
+        description="Modelled 14-day trend derived from current live readings — not an official time series"
       >
         <div className="h-[320px]">
           <ResponsiveContainer width="100%" height="100%">
