@@ -1,23 +1,56 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { COUNTRIES, getReadings, type CityReading, type CountryCode } from "@/data/brics";
 import { computeRisk, levelFromScore, type RiskLevel } from "@/lib/risk";
 import { loadIncidents, subscribeIncidents, type Incident } from "@/lib/incidents";
+import { getLiveReadings } from "@/lib/live.functions";
 
 export interface ScoredCity extends CityReading {
   risk_score: number;
   risk_level: RiskLevel;
 }
 
-/** Hourly-bucketed so SSR output and the first client render match exactly. */
-export function useCities(): ScoredCity[] {
-  return useMemo(() => {
+function score(readings: CityReading[]): ScoredCity[] {
+  return readings.map((r) => {
+    const risk = computeRisk(r);
+    return { ...r, risk_score: risk.risk_score, risk_level: risk.risk_level };
+  });
+}
+
+/**
+ * Live readings from Open-Meteo (CAMS air quality + weather), refreshed every
+ * 10 minutes. Falls back to the deterministic demo dataset while loading or
+ * if the upstream service is unavailable.
+ */
+export function useLiveCities() {
+  const query = useQuery({
+    queryKey: ["live-readings"],
+    queryFn: () => getLiveReadings(),
+    staleTime: 10 * 60 * 1000,
+    refetchInterval: 10 * 60 * 1000,
+  });
+
+  const fallback = useMemo(() => {
     const bucket = Math.floor(Date.now() / 3_600_000) * 3_600_000;
-    return getReadings(bucket).map((r) => {
-      const risk = computeRisk(r);
-      return { ...r, risk_score: risk.risk_score, risk_level: risk.risk_level };
-    });
+    return score(getReadings(bucket));
   }, []);
+
+  const cities = useMemo(
+    () => (query.data?.readings ? score(query.data.readings) : fallback),
+    [query.data, fallback],
+  );
+
+  return {
+    cities,
+    live: query.data?.live === true,
+    loading: query.isLoading,
+    error: query.data?.error ?? (query.error ? "Live data request failed" : undefined),
+  };
+}
+
+export function useCities(): ScoredCity[] {
+  return useLiveCities().cities;
 }
 
 export function useIncidents(): Incident[] {

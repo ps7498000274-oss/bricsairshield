@@ -12,8 +12,8 @@
 
 const GOOGLE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
-const MODEL_GOOGLE = "gemini-2.5-flash";
-const MODEL_GATEWAY = "google/gemini-2.5-flash";
+const MODEL_GOOGLE = "gemini-3.6-flash";
+const MODEL_GATEWAY = "google/gemini-3.7-flash";
 
 export interface GeminiImage {
   mimeType: string;

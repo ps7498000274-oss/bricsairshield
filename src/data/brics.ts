@@ -33,7 +33,7 @@ export interface CityReading {
   wind_speed: number;
   wind_direction: number;
   pressure: number;
-  source: "demo";
+  source: "demo" | "live";
 }
 
 export const COUNTRIES: Country[] = [

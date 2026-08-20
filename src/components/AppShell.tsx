@@ -47,7 +47,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
 
           <span className="ml-auto hidden shrink-0 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-medium uppercase tracking-wider text-primary lg:ml-0 lg:inline">
-            Prototype · Demo data
+            Prototype · Live data
           </span>
 
           <button
@@ -84,7 +84,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="mx-auto max-w-[1400px] px-4 py-8 text-xs leading-relaxed text-muted-foreground sm:px-6">
           <p className="max-w-3xl">
             BRICS AirShield is a hackathon prototype. Environmental values in this build are
-            <strong className="text-foreground"> simulated demo data</strong> with realistic
+            <strong className="text-foreground"> live Open-Meteo / CAMS model data</strong> with realistic
             magnitudes — they are not live government sensor readings. Risk scores are prototype
             estimates from a transparent weighted model, not official AQI forecasts. Image analysis
             is AI-assisted (Google Gemini) and is not an official environmental diagnosis.

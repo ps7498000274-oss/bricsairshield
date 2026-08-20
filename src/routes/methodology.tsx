@@ -47,12 +47,14 @@ function MethodologyPage() {
         <Panel title="1. Data sources">
           <dl className="space-y-4 text-sm">
             <div>
-              <dt className="font-medium">Environmental readings — SIMULATED DEMO DATA</dt>
+              <dt className="font-medium">Environmental readings — LIVE OPEN DATA (Open-Meteo / CAMS)</dt>
               <dd className="mt-1 text-muted-foreground">
-                26 cities across five BRICS nations. Baselines were chosen to match publicly
-                reported typical magnitudes for each city, then varied deterministically per hour so
-                the interface behaves like a live feed. These are <strong>not</strong> live
-                government sensor readings and must never be cited as such.
+                26 cities across five BRICS nations. PM2.5, PM10 and US AQI come from the Open-Meteo
+                Air Quality API (Copernicus CAMS global model); temperature, humidity, wind and
+                pressure from the Open-Meteo Forecast API. Both are free and keyless, refreshed
+                every 10 minutes. These are <strong>modelled</strong> values, not official
+                government reference-monitor readings, and must not be cited as such. If the feed is
+                unreachable the app falls back to a labelled seed dataset.
               </dd>
             </div>
             <div>
@@ -71,7 +73,7 @@ function MethodologyPage() {
             <div>
               <dt className="font-medium">Production path</dt>
               <dd className="mt-1 text-muted-foreground">
-                In deployment the demo layer is replaced by open feeds — OpenAQ, national CPCB/CETESB
+                Readings come from the free, keyless Open-Meteo Air Quality (CAMS global model) and Forecast APIs, refreshed every 10 minutes. Further sources — OpenAQ, national CPCB/CETESB
                 /MEE-style portals and the free Open-Meteo weather API — without changing the schema
                 or the AI layer.
               </dd>
@@ -173,7 +175,7 @@ function MethodologyPage() {
         <Panel title="6. Limitations" className="lg:col-span-2">
           <ul className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
             {[
-              "Environmental values are simulated demo data, not live government readings.",
+              "Environmental values come from the Open-Meteo/CAMS model, not official government reference monitors.",
               "Risk scores are heuristic estimates and are not validated against health outcomes.",
               "Image analysis can misread fog, cloud, dust or backlighting as pollution.",
               "The system cannot identify a specific facility, operator or legal violation.",
@@ -192,7 +194,7 @@ function MethodologyPage() {
 
         <Panel title="7. Future deployment" className="lg:col-span-2">
           <p className="text-sm text-muted-foreground">
-            Next steps: swap the demo layer for OpenAQ and Open-Meteo ingestion on a scheduled job;
+            Next steps: add OpenAQ ground-sensor ingestion on a scheduled job;
             move incidents to a managed Postgres with row-level security; add satellite-derived
             aerosol context; calibrate the weighted model against reference-grade monitors and only
             then consider a supervised model; add multilingual Copilot output for each BRICS

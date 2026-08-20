@@ -1,4 +1,4 @@
-import { getReadingById, getReadings } from "@/data/brics";
+import { fetchLiveReadings } from "@/lib/live.server";
 import { computeRisk, levelFromScore } from "@/lib/risk";
 import { callGemini, parseJsonLoose } from "@/lib/gemini.server";
 
@@ -110,25 +110,26 @@ export async function analyzeImageImpl(input: {
 }
 
 /* ------------------------------------------------------------ risk detail */
-export function riskContextFor(cityId: string) {
-  const reading = getReadingById(cityId);
+export async function riskContextFor(cityId: string) {
+  const { readings } = await fetchLiveReadings();
+  const reading = readings.find((r) => r.id === cityId);
   if (!reading) return null;
   return { reading, risk: computeRisk(reading) };
 }
 
 export async function explainRiskImpl(cityId: string): Promise<AiEnvelope<{ text: string }>> {
-  const ctx = riskContextFor(cityId);
+  const ctx = await riskContextFor(cityId);
   if (!ctx) throw new Error("Unknown city id");
   const { reading, risk } = ctx;
 
   return cached(`explain:${cityId}:${reading.timestamp}`, async () => {
     const res = await callGemini({
       system:
-        "You are an air-quality analyst for BRICS AirShield. Explain risk drivers plainly in 90-130 words for a city official. Use only the supplied data. Never invent sensor readings, government sources or forecasts. State that values are prototype/demo estimates.",
+        "You are an air-quality analyst for BRICS AirShield. Explain risk drivers plainly in 90-130 words for a city official. Use only the supplied data. Never invent sensor readings, government sources or forecasts. Values are live modelled observations from Open-Meteo/CAMS; risk scores are prototype estimates.",
       prompt: `City: ${reading.city}, ${reading.country} (${reading.region})
 PM2.5 ${reading.pm25} µg/m³ | PM10 ${reading.pm10} | AQI ${reading.aqi}
 Temp ${reading.temperature}°C | Humidity ${reading.humidity}% | Wind ${reading.wind_speed} m/s | Pressure ${reading.pressure} hPa
-Prototype risk score: ${risk.risk_score}/100 (${risk.risk_level})
+Risk score: ${risk.risk_score}/100 (${risk.risk_level})
 Factor contributions: ${risk.factors.map((f) => `${f.label} ${f.points}/${f.max}`).join("; ")}
 
 Explain why this location carries this risk level and what an authority should investigate first.`,
@@ -143,7 +144,7 @@ Explain why this location carries this risk level and what an authority should i
     const top = risk.factors.slice(0, 3).map((f) => `${f.label} (${f.points}/${f.max}) — ${f.detail}`);
     return {
       data: {
-        text: `${reading.city} scores ${risk.risk_score}/100 (${risk.risk_level}) on the prototype risk model. Leading contributors:\n• ${top.join("\n• ")}\nThese are simulated demo values combined by a transparent weighted model, not an official forecast.`,
+        text: `${reading.city} scores ${risk.risk_score}/100 (${risk.risk_level}) on the prototype risk model. Leading contributors:\n• ${top.join("\n• ")}\nThese are live modelled observations combined by a transparent weighted model, not an official government forecast.`,
       },
       ai: { generated_by: "fallback" as const, notice: FALLBACK_NOTICE, error: res.error },
     };
@@ -151,8 +152,8 @@ Explain why this location carries this risk level and what an authority should i
 }
 
 /* ---------------------------------------------------------------- copilot */
-function globalContext() {
-  const readings = getReadings();
+async function globalContext() {
+  const { readings } = await fetchLiveReadings();
   const rows = readings.map((r) => {
     const risk = computeRisk(r);
     return { ...r, risk_score: risk.risk_score, risk_level: risk.risk_level };
@@ -171,7 +172,7 @@ function globalContext() {
       `${c}: ${e.n} cities, avg AQI ${Math.round(e.aqi / e.n)}, avg risk ${Math.round(e.risk / e.n)}, ${e.high} high-or-worse`,
   );
   const top = [...rows].sort((a, b) => b.risk_score - a.risk_score).slice(0, 8);
-  return `COUNTRY SUMMARY (simulated demo dataset)\n${countryLines.join("\n")}\n\nTOP RISK LOCATIONS\n${top
+  return `COUNTRY SUMMARY (live observation dataset)\n${countryLines.join("\n")}\n\nTOP RISK LOCATIONS\n${top
     .map(
       (r) =>
         `${r.city}, ${r.country} — risk ${r.risk_score} (${r.risk_level}), AQI ${r.aqi}, PM2.5 ${r.pm25}, wind ${r.wind_speed} m/s`,
@@ -184,15 +185,15 @@ export async function copilotImpl(input: {
   cityId?: string | undefined;
   history?: Array<{ role: "user" | "assistant"; content: string }> | undefined;
 }): Promise<AiEnvelope<{ text: string }>> {
-  const focus = input.cityId ? riskContextFor(input.cityId) : null;
+  const focus = input.cityId ? await riskContextFor(input.cityId) : null;
   const focusBlock = focus
     ? `\n\nFOCUS CITY: ${focus.reading.city}, ${focus.reading.country} — AQI ${focus.reading.aqi}, PM2.5 ${focus.reading.pm25}, PM10 ${focus.reading.pm10}, wind ${focus.reading.wind_speed} m/s, humidity ${focus.reading.humidity}%, risk ${focus.risk.risk_score}/100 (${focus.risk.risk_level}). Factors: ${focus.risk.factors.map((f) => `${f.label} ${f.points}/${f.max}`).join("; ")}`
     : "";
 
   const res = await callGemini({
     system: `You are the BRICS AirShield Climate Copilot — an analyst assistant for a cross-border air-pollution intelligence prototype covering India, Brazil, Russia, China and South Africa.
-Answer only from the CONTEXT block plus general environmental-science knowledge. If asked for data not in the context, say it is not available in the prototype. Never invent live readings, government sources, satellite feeds or partnerships. Always be clear that dataset values are simulated demo data and risk scores are prototype estimates. Answer in under 180 words, using short paragraphs or bullets.`,
-    prompt: `CONTEXT\n${globalContext()}${focusBlock}\n\nQUESTION: ${input.question}`,
+Answer only from the CONTEXT block plus general environmental-science knowledge. If asked for data not in the context, say it is not available in the prototype. Never invent live readings, government sources, satellite feeds or partnerships. Dataset values are live air-quality and weather observations from the Open-Meteo/CAMS model; risk scores are prototype estimates. Answer in under 180 words, using short paragraphs or bullets.`,
+    prompt: `CONTEXT\n${await globalContext()}${focusBlock}\n\nQUESTION: ${input.question}`,
     history: input.history,
   });
 
@@ -204,7 +205,7 @@ Answer only from the CONTEXT block plus general environmental-science knowledge.
   }
   return {
     data: {
-      text: `The AI Copilot is temporarily unavailable, so here is the raw prototype data instead:\n\n${globalContext()}`,
+      text: `The AI Copilot is temporarily unavailable, so here is the raw prototype data instead:\n\n${await globalContext()}`,
     },
     ai: { generated_by: "fallback", notice: FALLBACK_NOTICE, error: res.error },
   };
