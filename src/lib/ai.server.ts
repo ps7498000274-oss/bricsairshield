@@ -247,3 +247,46 @@ Prototype risk: ${i.riskScore}/100 (${i.riskLevel})`,
     ai: { generated_by: "fallback", notice: FALLBACK_NOTICE, error: res.error },
   };
 }
+
+/* ------------------------------------------------- corridor forecast brief */
+export async function forecastBriefImpl(
+  corridorId: string,
+): Promise<AiEnvelope<{ text: string }>> {
+  const { fetchForecast } = await import("@/lib/forecast.server");
+  const fc = await fetchForecast();
+  const corridor = fc.corridors.find((c) => c.id === corridorId);
+  if (!corridor) throw new Error("Unknown corridor id");
+  const rows = fc.cities.filter((c) => corridor.cityIds.includes(c.id));
+
+  return cached(`forecast:${corridorId}:${fc.generatedAt.slice(0, 13)}`, async () => {
+    const res = await callGemini({
+      system:
+        "You are the forecast desk of BRICS AirShield. Write an intervention brief for the authorities responsible for an economic corridor. Exactly three sections: OUTLOOK, DRIVERS, COORDINATED ACTION. Max 150 words. Use only the supplied CAMS forecast numbers. Never invent monitoring stations, policies or legal findings. State that this is a modelled forecast, not an official advisory.",
+      prompt: `Corridor: ${corridor.name} (${corridor.country_code})
+Window: next 48 hours from ${fc.generatedAt}
+Corridor average AQI now ${corridor.currentAqi} → forecast peak ${corridor.peak48} (${corridor.delta48 >= 0 ? "+" : ""}${corridor.delta48}), classification ${corridor.spike.toUpperCase()}
+City detail:
+${rows
+  .map(
+    (r) =>
+      `- ${r.city}: now ${r.currentAqi}, 24h peak ${r.peak24} at ${r.peak24At}, 48h peak ${r.peak48} at ${r.peak48At}, min wind ${r.minWind} m/s — ${r.reason}`,
+  )
+  .join("\n")}
+
+Write the brief.`,
+    });
+
+    if (res.ok) {
+      return {
+        data: { text: res.text.trim() },
+        ai: { generated_by: "gemini" as const, provider: res.provider, notice: GEMINI_NOTICE },
+      };
+    }
+    return {
+      data: {
+        text: `OUTLOOK — ${corridor.name}: corridor average AQI ${corridor.currentAqi} now, modelled peak ${corridor.peak48} within 48h (${corridor.spike.toUpperCase()}), worst at ${corridor.worstCity}.\nDRIVERS — ${rows.map((r) => `${r.city}: ${r.reason}`).join(" ")}\nCOORDINATED ACTION — Pre-position monitoring and issue joint advisories across the corridor before the peak hour. Modelled forecast only, not an official advisory.`,
+      },
+      ai: { generated_by: "fallback" as const, notice: FALLBACK_NOTICE, error: res.error },
+    };
+  });
+}
