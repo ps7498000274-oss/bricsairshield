@@ -68,6 +68,8 @@ interface HourlyWx {
   hourly?: { time?: string[]; wind_speed_10m?: Array<number | null> };
 }
 
+const RANK: Record<SpikeLevel, number> = { none: 0, watch: 1, alert: 2, severe: 3 };
+
 let cache: { at: number; value: ForecastPayload } | null = null;
 
 function classify(delta: number, peak: number, minWind: number): [SpikeLevel, string] {
@@ -252,7 +254,7 @@ export async function fetchForecast(): Promise<ForecastPayload> {
       hourly,
       description: `${c.description} ${reason}`,
     } satisfies CorridorForecast;
-  }).sort((a, b) => b.delta48 - a.delta48 || b.peak48 - a.peak48);
+  }).sort((a, b) => RANK[b.spike] - RANK[a.spike] || b.delta48 - a.delta48 || b.peak48 - a.peak48);
 
   const value: ForecastPayload = {
     generatedAt: new Date().toISOString(),

@@ -71,6 +71,21 @@ function MethodologyPage() {
               </dd>
             </div>
             <div>
+              <dt className="font-medium">48h spike forecast — LIVE MODEL OUTPUT</dt>
+              <dd className="mt-1 text-muted-foreground">
+                The Forecast page reads the hourly US-AQI and PM2.5 forecast from the same
+                Open-Meteo/CAMS model (3 days, refreshed every 30 minutes) plus hourly 10 m wind. A
+                spike is flagged locally by comparing the current hour with the worst hour in the
+                next 24h and 48h windows: <strong>watch</strong> at +20 AQI (or +10 above 100),{" "}
+                <strong>alert</strong> at +40 (or +20 above 150) and <strong>severe</strong> at +25
+                above 200. Cities are grouped into shared-airshed economic corridors (Indo-Gangetic
+                Plain, Delhi–Mumbai, Jing-Jin-Ji, Amazon Burning Arc, Highveld and others) so both
+                ends of a corridor see the same outlook. It is a modelled prediction, not an
+                official government advisory.
+              </dd>
+            </div>
+
+            <div>
               <dt className="font-medium">Production path</dt>
               <dd className="mt-1 text-muted-foreground">
                 Readings come from the free, keyless Open-Meteo Air Quality (CAMS global model) and Forecast APIs, refreshed every 10 minutes. Further sources — OpenAQ, national CPCB/CETESB

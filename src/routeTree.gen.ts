@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalyzeRouteImport } from './routes/analyze'
 import { Route as CopilotRouteImport } from './routes/copilot'
 import { Route as CountriesRouteImport } from './routes/countries'
+import { Route as ForecastRouteImport } from './routes/forecast'
 import { Route as IncidentsRouteImport } from './routes/incidents'
 import { Route as LiveRouteImport } from './routes/live'
 import { Route as MethodologyRouteImport } from './routes/methodology'
@@ -36,6 +37,11 @@ const CopilotRoute = CopilotRouteImport.update({
 const CountriesRoute = CountriesRouteImport.update({
   id: '/countries',
   path: '/countries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForecastRoute = ForecastRouteImport.update({
+  id: '/forecast',
+  path: '/forecast',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IncidentsRoute = IncidentsRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/analyze': typeof AnalyzeRoute
   '/copilot': typeof CopilotRoute
   '/countries': typeof CountriesRoute
+  '/forecast': typeof ForecastRoute
   '/incidents': typeof IncidentsRoute
   '/live': typeof LiveRoute
   '/methodology': typeof MethodologyRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/analyze': typeof AnalyzeRoute
   '/copilot': typeof CopilotRoute
   '/countries': typeof CountriesRoute
+  '/forecast': typeof ForecastRoute
   '/incidents': typeof IncidentsRoute
   '/live': typeof LiveRoute
   '/methodology': typeof MethodologyRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/analyze': typeof AnalyzeRoute
   '/copilot': typeof CopilotRoute
   '/countries': typeof CountriesRoute
+  '/forecast': typeof ForecastRoute
   '/incidents': typeof IncidentsRoute
   '/live': typeof LiveRoute
   '/methodology': typeof MethodologyRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/analyze'
     | '/copilot'
     | '/countries'
+    | '/forecast'
     | '/incidents'
     | '/live'
     | '/methodology'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/analyze'
     | '/copilot'
     | '/countries'
+    | '/forecast'
     | '/incidents'
     | '/live'
     | '/methodology'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/analyze'
     | '/copilot'
     | '/countries'
+    | '/forecast'
     | '/incidents'
     | '/live'
     | '/methodology'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   AnalyzeRoute: typeof AnalyzeRoute
   CopilotRoute: typeof CopilotRoute
   CountriesRoute: typeof CountriesRoute
+  ForecastRoute: typeof ForecastRoute
   IncidentsRoute: typeof IncidentsRoute
   LiveRoute: typeof LiveRoute
   MethodologyRoute: typeof MethodologyRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/countries'
       fullPath: '/countries'
       preLoaderRoute: typeof CountriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forecast': {
+      id: '/forecast'
+      path: '/forecast'
+      fullPath: '/forecast'
+      preLoaderRoute: typeof ForecastRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/incidents': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnalyzeRoute: AnalyzeRoute,
   CopilotRoute: CopilotRoute,
   CountriesRoute: CountriesRoute,
+  ForecastRoute: ForecastRoute,
   IncidentsRoute: IncidentsRoute,
   LiveRoute: LiveRoute,
   MethodologyRoute: MethodologyRoute,

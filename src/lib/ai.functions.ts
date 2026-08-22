@@ -57,3 +57,10 @@ export const summarizeIncident = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data }) => summarizeIncidentImpl(data));
+
+export const explainForecast = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ corridorId: z.string().max(40) }).parse(d))
+  .handler(async ({ data }) => {
+    const { forecastBriefImpl } = await import("./ai.server");
+    return forecastBriefImpl(data.corridorId);
+  });
