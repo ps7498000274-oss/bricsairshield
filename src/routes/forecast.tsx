@@ -149,7 +149,7 @@ function ForecastPage() {
           <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
             <Panel
               title={active ? active.name : "Corridor outlook"}
-              description={active?.description}
+              {...(active?.description ? { description: active.description } : {})}
               action={active ? <SpikeBadge level={active.spike} /> : undefined}
             >
               <div className="h-[280px]">
